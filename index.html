@@ -104,46 +104,55 @@
   (function () {
     // rutas exactas de tus archivos
     var ES_PATH = "index.html";
-    var EN_PATH = "indexen.html"; // si tu archivo es "indexen.HTML", déjalo así pero con el mismo case:
-    // var EN_PATH = "indexen.HTML";
+    var EN_PATH = "indexen.html"; // si tu archivo es "indexen.HTML", respeta mayúsculas/minúsculas
 
-    // detectar si ya estás en la versión en inglés, insensible a mayúsculas
+    // detectar si ya estás en la versión en inglés
     var pathLower = location.pathname.toLowerCase();
-    var isOnEnglish = pathLower.endsWith("/indexen.html") || pathLower.endsWith("/indexen.html".toLowerCase()) || pathLower.includes("indexen.");
+    var isOnEnglish =
+      pathLower.endsWith("/indexen.html") ||
+      pathLower.includes("indexen.");
 
-    // lee preferencia
+    // leer preferencia
     var choice = localStorage.getItem("jotchua_lang");
 
     function el(id) { return document.getElementById(id); }
-    function show() { var b = el("lang-backdrop"); if (b) { b.style.display = "flex"; } }
-    function hide() { var b = el("lang-backdrop"); if (b) { b.style.display = "none"; } }
+    function show() { var b = el("lang-backdrop"); if (b) b.style.display = "flex"; }
+    function hide() { var b = el("lang-backdrop"); if (b) b.style.display = "none"; }
 
     function go(lang) {
       localStorage.setItem("jotchua_lang", lang);
       if (lang === "en" && !isOnEnglish) { location.href = EN_PATH; return; }
-      if (lang === "es" && isOnEnglish) { location.href = ES_PATH; return; }
+      if (lang !== "en" && isOnEnglish) { location.href = ES_PATH; return; }
       hide();
     }
 
     // Espera a que TODO cargue por si Webflow/otros scripts mueven el DOM
     window.addEventListener("load", function () {
       try {
-        // si hay preferencia guardada, respeta y redirige
+        // si no hay preferencia, por defecto español
+        if (!choice) {
+          choice = "es";
+          localStorage.setItem("jotchua_lang", "es");
+        }
+
+        // respeta preferencia y corrige si estás en la página equivocada
         if (choice === "en" && !isOnEnglish) { location.replace(EN_PATH); return; }
-        if (choice === "es" && isOnEnglish) { location.replace(ES_PATH); return; }
-        // si no hay preferencia, muestra el modal
+        if (choice !== "en" && isOnEnglish) { location.replace(ES_PATH); return; }
+
+        // si todo ok, muestra el modal para permitir cambiar
         show();
         el("btn-es") && el("btn-es").addEventListener("click", function () { go("es"); });
         el("btn-en") && el("btn-en").addEventListener("click", function () { go("en"); });
       } catch (e) {
         console.error("Lang modal error:", e);
-        // Fallback ultra simple con confirm si algo falla:
-        var ok = confirm("¿No hablas español, wey? Aceptar = Inglés, Cancelar = Español");
+        // Fallback ultra simple con confirm si algo falla (ES por defecto)
+        var ok = confirm("¿Seguro que no quieres la página en español? Le metimos cariño :C\nAceptar = Inglés, Cancelar = Español");
         go(ok ? "en" : "es");
       }
     });
   })();
 </script>
+
 
 
 <body>
@@ -524,7 +533,8 @@
                             <h3 class="heading-7">CEO de JOTCHUA</h3>
                           </div>
                           <div class="margin-top margin-xsmall">
-                            <div class="text-size-medium text-align-center">“De meme a leyenda, y de leyenda a millonada.” 💸</div>
+                            <div class="text-size-medium text-align-center">“De meme a leyenda, y de leyenda a
+                              millonada.” 💸</div>
                           </div>
                         </div>
                       </div>
@@ -537,7 +547,8 @@
                             <h3 class="heading-8">Inversor nivel leyenda</h3>
                           </div>
                           <div class="margin-top margin-xsmall">
-                            <div class="text-size-medium text-align-center">“Vendí mi casa, pero gané un Jotchua.” 🏠➡️🐕
+                            <div class="text-size-medium text-align-center">“Vendí mi casa, pero gané un Jotchua.”
+                              🏠➡️🐕
                             </div>
                           </div>
                         </div>
@@ -551,7 +562,8 @@
                             <h3 class="heading-9">Miner oficial de JOTCHUA</h3>
                           </div>
                           <div class="margin-top margin-xsmall">
-                            <div class="text-size-medium text-align-center">“Cada bloque minado es una croqueta para el perrito.” 🍖⛏️
+                            <div class="text-size-medium text-align-center">“Cada bloque minado es una croqueta para el
+                              perrito.” 🍖⛏️
                             </div>
                           </div>
                         </div>

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html data-wf-page="664c43e90d550aa2d587115f" data-wf-site="664c43e90d550aa2d5871129">
 
@@ -103,49 +102,56 @@
 
 <script>
   (function () {
-    // exact paths to your files
+    // rutas exactas de tus archivos
     var ES_PATH = "index.html";
-    var EN_PATH = "indexen.html"; // if your file is "indexen.HTML", keep the same case:
-    // var EN_PATH = "indexen.HTML";
+    var EN_PATH = "indexen.html"; // si tu archivo es "indexen.HTML", respeta mayúsculas/minúsculas
 
-    // detect if you're already on the English version, case-insensitive
+    // detectar si ya estás en la versión en inglés
     var pathLower = location.pathname.toLowerCase();
-    var isOnEnglish = pathLower.endsWith("/indexen.html") || pathLower.endsWith("/indexen.html".toLowerCase()) || pathLower.includes("indexen.");
+    var isOnEnglish =
+      pathLower.endsWith("/indexen.html") ||
+      pathLower.includes("indexen.");
 
-    // read preference
+    // leer preferencia
     var choice = localStorage.getItem("jotchua_lang");
 
     function el(id) { return document.getElementById(id); }
-    function show() { var b = el("lang-backdrop"); if (b) { b.style.display = "flex"; } }
-    function hide() { var b = el("lang-backdrop"); if (b) { b.style.display = "none"; } }
+    function show() { var b = el("lang-backdrop"); if (b) b.style.display = "flex"; }
+    function hide() { var b = el("lang-backdrop"); if (b) b.style.display = "none"; }
 
     function go(lang) {
       localStorage.setItem("jotchua_lang", lang);
       if (lang === "en" && !isOnEnglish) { location.href = EN_PATH; return; }
-      if (lang === "es" && isOnEnglish) { location.href = ES_PATH; return; }
+      if (lang !== "en" && isOnEnglish) { location.href = ES_PATH; return; }
       hide();
     }
 
-    // Wait until EVERYTHING loads in case Webflow/other scripts move the DOM
+    // Espera a que TODO cargue por si Webflow/otros scripts mueven el DOM
     window.addEventListener("load", function () {
       try {
-        // if there's a saved preference, honor and redirect
+        // si no hay preferencia, por defecto español
+        if (!choice) {
+          choice = "es";
+          localStorage.setItem("jotchua_lang", "es");
+        }
+
+        // respeta preferencia y corrige si estás en la página equivocada
         if (choice === "en" && !isOnEnglish) { location.replace(EN_PATH); return; }
-        if (choice === "es" && isOnEnglish) { location.replace(ES_PATH); return; }
-        // if no preference, show the modal
+        if (choice !== "en" && isOnEnglish) { location.replace(ES_PATH); return; }
+
+        // si todo ok, muestra el modal para permitir cambiar
         show();
         el("btn-es") && el("btn-es").addEventListener("click", function () { go("es"); });
         el("btn-en") && el("btn-en").addEventListener("click", function () { go("en"); });
       } catch (e) {
         console.error("Lang modal error:", e);
-        // Ultra-simple fallback with confirm if something fails:
-        var ok = confirm("Don't speak Spanish, bro? OK = English, Cancel = Spanish");
+        // Fallback ultra simple con confirm si algo falla (ES por defecto)
+        var ok = confirm("¿Seguro que no quieres la página en español? Le metimos cariño :C\nAceptar = Inglés, Cancelar = Español");
         go(ok ? "en" : "es");
       }
     });
   })();
 </script>
-
 
 <body>
   <div id="dont-delete-cuntt" class="dont-delete-cunt w-embed">
